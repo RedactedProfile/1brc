@@ -9,6 +9,8 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include "execution_timer.hpp"
+#include "string_tools.hpp"
 
 
 // Global debug level (set this to control output)
@@ -17,7 +19,7 @@ int GlobalDebugLevel = 3; // show all;
 // open log file
 std::ofstream DebugFile("log.txt", std::ios::out | std::ios::app);
 
-#define _LOG(level, label, msg) do { \
+#define _DLOG(level, label, msg) do { \
     if ((level) <= GlobalDebugLevel) { \
         auto now = std::chrono::system_clock::now(); \
         auto now_c = std::chrono::system_clock::to_time_t(now); \
@@ -27,19 +29,17 @@ std::ofstream DebugFile("log.txt", std::ios::out | std::ios::app);
     } \
 } while(0)
 
+#define CRIT_LOG(mes) _DLOG(0, "CRITICAL", mes);
+#define ERR_LOG(mes) _DLOG(1, "ERROR", mes);
+#define DEB_LOG(mes) _DLOG(2, "DEBUG", mes);
+#define INF_LOG(mes) _DLOG(3, "INFO", mes);
 
-#define CRIT_LOG(mes) _LOG(0, "CRITICAL", mes);
-#define ERR_LOG(mes) _LOG(1, "ERROR", mes);
-#define DEB_LOG(mes) _LOG(2, "DEBUG", mes);
-#define INF_LOG(mes) _LOG(3, "INFO", mes);
-
+#define LOG(mes) std::cout << mes << std::endl;
 
 int main() {
+    ExecutionTimer<std::chrono::milliseconds> timer;
 
-    INF_LOG("INFO LOG TEST");
-    DEB_LOG("DEBUG LOG TEST");
-    ERR_LOG("ERROR LOG TEST");
-    CRIT_LOG("CRITIAL ERROR LOG TEST");
+    LOG("Welcome");
 
 
 
