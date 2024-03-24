@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <sstream>
 #include <filesystem>
+#include <unordered_map>
 #include "execution_timer.hpp"
 #include "string_tools.hpp"
 
@@ -37,6 +38,32 @@ std::ofstream DebugFile("log.txt", std::ios::out | std::ios::app);
 
 #define LOG(mes) std::cout << mes << std::endl;
 
+typedef struct datum_s {
+    std::string label;
+    float value;
+} datum_t;
+/// <summary>
+/// Converts a string of ; deliminated values into a specifically typed pair pair 
+/// </summary>
+datum_t station_split(std::string line, char split_at = ';') {
+    std::istringstream iss(line);
+    datum_t out;
+    bool left = true;
+    std::string token;
+    while (std::getline(iss, token, split_at)) {
+        if (left) out.label = token;
+        else out.value = std::stof(token);
+        left = false;
+    }
+
+    return out;
+}
+
+
+
+
+#define STATION_PREALLOCATION 200
+std::unordered_map<std::string, uint32_t> stations;
 
 
 
@@ -65,9 +92,31 @@ int main() {
         while (std::getline(file, line)) {
             //parser(line, line_num);
             
-            INF_LOG(line);
+            //INF_LOG(line);
             for (int i = 0; i < line.size(); i++) {
 
+                // So for this approach, we can try using the string tools to split at ; into a pair, i imagine this isn't the most efficient usage but it's simple and to the point
+                datum_t datum = station_split(line);
+
+                // note: there's now 40 million approaches we could take here to organize the data discovered. Which is the nature of this challenge. 
+                // - we could do it enitrely in memory, build up an unordered map with the station as the key and then for each station we can analyze the values
+                //   but I have doubts the upper limit of usual memory capacity would make this not a viable solution
+                //   we could instead write the values to binary data files, separated by station, using the filesystem as a sort of on-the-fly database
+
+                // yeah let's do that
+
+                // strayegy here is this: 
+                //     Because the station names use non ASCII charcaters, we can't create filenames based sqaurely on the name, not in a way that's reconstructable anyways
+                //     So we'll create map of file pointers, the filenames will simply be "1.dat", "2.dat" but we'll map a station name like "St. Lucas's" to it's associated dat file. 
+                //     The "dat" file will contain nothing but a sequential list of floats.  
+                //     This map could simply be a vector of strings (station names) and the index can be the file pointer
+
+
+
+                if (!stations.at(datum.label)) {
+                    DEB_LOG("entry doesn't exist for this label, creating it");
+                    
+                }
             }
             
             line_num++;
