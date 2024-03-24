@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <chrono>
 #include <iomanip>
@@ -64,7 +65,15 @@ datum_t station_split(std::string line, char split_at = ';') {
 
 #define STATION_PREALLOCATION 200
 std::unordered_map<std::string, uint32_t> stations;
+std::vector<std::ifstream> fileHandlers = {};
 
+uint32_t file_id = 0;
+uint32_t createFileHandler() {
+
+}
+void getFileHandler() {
+
+}
 
 
 
@@ -93,31 +102,33 @@ int main() {
             //parser(line, line_num);
             
             //INF_LOG(line);
-            for (int i = 0; i < line.size(); i++) {
 
-                // So for this approach, we can try using the string tools to split at ; into a pair, i imagine this isn't the most efficient usage but it's simple and to the point
-                datum_t datum = station_split(line);
+            // So for this approach, we can try using the string tools to split at ; into a pair, i imagine this isn't the most efficient usage but it's simple and to the point
+            datum_t datum = station_split(line);
 
-                // note: there's now 40 million approaches we could take here to organize the data discovered. Which is the nature of this challenge. 
-                // - we could do it enitrely in memory, build up an unordered map with the station as the key and then for each station we can analyze the values
-                //   but I have doubts the upper limit of usual memory capacity would make this not a viable solution
-                //   we could instead write the values to binary data files, separated by station, using the filesystem as a sort of on-the-fly database
+            // note: there's now 40 million approaches we could take here to organize the data discovered. Which is the nature of this challenge. 
+            // - we could do it enitrely in memory, build up an unordered map with the station as the key and then for each station we can analyze the values
+            //   but I have doubts the upper limit of usual memory capacity would make this not a viable solution
+            //   we could instead write the values to binary data files, separated by station, using the filesystem as a sort of on-the-fly database
 
-                // yeah let's do that
+            // yeah let's do that
 
-                // strayegy here is this: 
-                //     Because the station names use non ASCII charcaters, we can't create filenames based sqaurely on the name, not in a way that's reconstructable anyways
-                //     So we'll create map of file pointers, the filenames will simply be "1.dat", "2.dat" but we'll map a station name like "St. Lucas's" to it's associated dat file. 
-                //     The "dat" file will contain nothing but a sequential list of floats.  
-                //     This map could simply be a vector of strings (station names) and the index can be the file pointer
-
+            // strayegy here is this: 
+            //     Because the station names use non ASCII charcaters, we can't create filenames based sqaurely on the name, not in a way that's reconstructable anyways
+            //     So we'll create map of file pointers, the filenames will simply be "1.dat", "2.dat" but we'll map a station name like "St. Lucas's" to it's associated dat file. 
+            //     The "dat" file will contain nothing but a sequential list of floats.  
+            //     This map could simply be a vector of strings (station names) and the index can be the file pointer
 
 
-                if (!stations.at(datum.label)) {
-                    DEB_LOG("entry doesn't exist for this label, creating it");
-                    
-                }
+
+
+            if (stations.find(datum.label) == stations.end()) {
+                DEB_LOG("entry doesn't exist for this label, creating it");
+                stations[datum.label] = createFileHandler();
             }
+
+            // getFileHandler(datum.value);
+            
             
             line_num++;
         }
