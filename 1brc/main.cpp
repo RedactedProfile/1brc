@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <filesystem>
 #include "execution_timer.hpp"
 #include "string_tools.hpp"
 
@@ -36,13 +37,44 @@ std::ofstream DebugFile("log.txt", std::ios::out | std::ios::app);
 
 #define LOG(mes) std::cout << mes << std::endl;
 
+
+
+
+
 int main() {
     ExecutionTimer<std::chrono::milliseconds> timer;
 
-    LOG("Welcome");
+    INF_LOG("Kyle's 1brc - attempt 1 - the 'dumb' approach");
+    INF_LOG("=============================================");
 
+    DEB_LOG("Loading input..");
+    
+    std::string filename = "measurements.txt";
+    if (!std::filesystem::exists(filename)) {
+        CRIT_LOG("File doesn't exist");
+        exit(1);
+    }
 
+    std::ifstream file(filename);
 
+    // Phase 1: Read the data from file
+    int line_num = 0;
+    if (file.is_open())
+    {
+        std::string line;
+        while (std::getline(file, line)) {
+            //parser(line, line_num);
+            
+            INF_LOG(line);
+            for (int i = 0; i < line.size(); i++) {
+
+            }
+            
+            line_num++;
+        }
+    }
+
+    file.close();
 
     DebugFile.close();
     return 0;
